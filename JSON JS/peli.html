@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Películas</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        color: white;
+        overflow-y: auto;
+        background-image: url("peli.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+
+      /* Contenedor de las películas */
+      #div {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.6
+        ); /* Fondo semitransparente para que se vean las pelis */
+        border-radius: 10px;
+        margin: 20px;
+      }
+
+      /* Cada película */
+      .peli {
+        width: 200px;
+        text-align: center;
+      }
+
+      .peli img {
+        width: 100%;
+        border-radius: 10px;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      /* Input y botón */
+      input,
+      button {
+        margin: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        font-size: 16px;
+      }
+      #mostrar {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input
+        type="text"
+        id="busca"
+        placeholder="Escribe un título"
+      /><required></required>
+
+      <input type="text" id="anio" placeholder="Escribe el año:" />
+      <button id="botonbuscar">Buscar...</button>
+    </div>
+
+    <div id="div"></div>
+
+    <script src="peli.js"></script>
+  </body>
+</html>
