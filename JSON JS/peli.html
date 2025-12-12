@@ -63,9 +63,212 @@
         bottom: 20px;
         left: 20px;
       }
+      .switch {
+        position: fixed; /* Siempre arriba aunque hagas scroll */
+        top: 10px; /* Separación del borde superior */
+        left: 90%; /* Centro horizontal */
+        transform: translateX(-50%); /* Corrección para centrar */
+
+        width: 100px;
+        height: 50px;
+        box-sizing: border-box;
+        padding: 3px;
+        background: #0d0d0d;
+        border-radius: 6px;
+        box-shadow: inset 0 1px 1px 1px rgba(0, 0, 0, 0.5),
+          0 1px 0 0 rgba(255, 255, 255, 0.1);
+        z-index: 1000; /* Para que esté encima de todo */
+      }
+      .switch input[type="checkbox"] {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .switch input[type="checkbox"] + label {
+        position: relative;
+        display: block;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        background: #1b1c1c;
+        border-radius: 3px;
+        box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        transition: all 0.5s ease-in-out;
+      }
+      .switch input[type="checkbox"] + label:before {
+        content: "";
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        margin-left: 10px;
+        background: #ffffff; /* color blanco */
+        border-radius: 50%;
+        vertical-align: middle;
+        box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.9),
+          0 0 3px 1px rgba(255, 255, 255, 0.9); /* sombra blanca */
+        transition: all 0.5s ease-in-out;
+      }
+
+      .switch input[type="checkbox"] + label:after {
+        content: "";
+        display: inline-block;
+        width: 0;
+        height: 100%;
+        vertical-align: middle;
+      }
+      .switch input[type="checkbox"] + label i {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 3px;
+        height: 24px;
+        margin-top: -12px;
+        margin-left: -1.5px;
+        border-radius: 2px;
+        background: #0d0d0d;
+        box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3);
+      }
+      .switch input[type="checkbox"] + label i:before,
+      .switch input[type="checkbox"] + label i:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 2px;
+        background: #0d0d0d;
+        box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.3);
+      }
+      .switch input[type="checkbox"] + label i:before {
+        left: -7px;
+      }
+      .switch input[type="checkbox"] + label i:after {
+        left: 7px;
+      }
+      .switch input[type="checkbox"]:checked + label {
+        left: 50%;
+      }
+      .switch input[type="checkbox"]:checked + label:before {
+        box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.9),
+          0 0 3px 1px rgba(255, 255, 255, 0.9);
+      }
+
+      .switch-text {
+        position: absolute;
+        top: 50%;
+        left: 105%;
+        transform: translateY(-50%);
+        font-weight: bold;
+        font-size: 18px;
+        color: #ff0000; /* color neón rojo */
+        text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 20px #ff0000,
+          0 0 30px #ff0000;
+        padding: 5px 12px;
+        border-radius: 12px; /* bordes curvos */
+        background: rgba(0, 0, 0, 0.3); /* fondo semi-transparente */
+        backdrop-filter: blur(4px); /* efecto blur */
+        transition: all 0.3s ease-in-out; /* animación al cambiar texto */
+        white-space: nowrap; /* que no se parta el texto */
+      }
+      #bienvenida {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        z-index: 2000;
+      }
+
+      #cerrar-bienvenida {
+        padding: 10px 20px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        background: red;
+        color: white;
+        cursor: pointer;
+      }
+      /* Contenedor de favoritos igual que el de películas */
+      #contenedor-favoritos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        margin: 20px;
+        display: none; /* oculto al inicio */
+      }
+
+      /* Cada tarjeta de favorito igual que .peli */
+      .fav-card {
+        width: 200px; /* igual que .peli */
+        text-align: center;
+        cursor: pointer;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s;
+        display: flex;
+        flex-direction: column; /* imagen arriba, info abajo */
+      }
+
+      .fav-card:hover {
+        transform: scale(1.05);
+      }
+
+      .fav-card img {
+        width: 100%;
+        border-radius: 10px;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .fav-card-info {
+        padding: 10px;
+        color: white;
+      }
+
+      .fav-card-info h3 {
+        margin: 5px 0;
+        font-size: 16px;
+      }
+
+      .fav-card-info p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .fav-card-info button {
+        margin-top: 8px;
+        width: 100%;
+        padding: 6px;
+        background: red;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
+    <button id="btn-favoritos">⭐ Favoritos</button>
+
+    <div id="contenedor-favoritos"></div>
     <div>
       <input
         type="text"
@@ -78,6 +281,25 @@
     </div>
 
     <div id="div"></div>
+
+    <div class="switch" id="switch">
+      <input id="toggle" type="checkbox" />
+      <label class="toggle" for="toggle">
+        <i></i>
+      </label>
+      <span id="switch-text" class="switch-text"> Series </span>
+    </div>
+
+    <div id="bienvenida">
+      <h1 style="font-size: 32px; margin-bottom: 20px">Bienvenido/a</h1>
+      <p style="font-size: 20px; max-width: 600px; margin-bottom: 30px">
+        Esta página te permite buscar <strong>películas y series</strong>.
+        Puedes escribir un título, elegir año y cambiar entre modo
+        películas/series. Haz clic en una portada para ver todos los detalles.
+      </p>
+
+      <button id="cerrar-bienvenida">Entrar</button>
+    </div>
 
     <script src="peli.js"></script>
   </body>
