@@ -1,181 +1,137 @@
 function mostrarPelis(cont, pelis) {
   pelis.forEach((peli) => {
-    var miDiv = document.createElement("div");
+    const miDiv = document.createElement("div");
     miDiv.className = "peli";
-    // crea cada tarjeta de película
 
-    var imagen = document.createElement("img");
-
-    // si hay poster válido lo usa, si no pone la imagen por defecto
-    if (peli.Poster && peli.Poster !== "N/A") {
-      imagen.src = peli.Poster;
-    } else {
-      imagen.src = "defecto.jpg";
-    }
-
+    const imagen = document.createElement("img");
+    imagen.src =
+      peli.Poster && peli.Poster !== "N/A" ? peli.Poster : "defecto.jpg";
     imagen.alt = peli.Title;
-    imagen.style.width = "150px";
-    imagen.style.margin = "10px";
 
-    // si falla la imagen del poster, mete la de defecto
-    imagen.onerror = () => {
-      imagen.src = "defecto.jpg";
-    };
-
-    var title = document.createElement("p");
+    const title = document.createElement("p");
     title.textContent = peli.Title;
-    // muestra el nombre de la peli
 
-    var fav = document.createElement("span");
+    const fav = document.createElement("span");
     fav.innerHTML = "&#9733;";
-    // estrella para marcar favoritos
+    fav.style.cursor = "pointer";
+    fav.style.display = "block";
 
-    let favoritos = localStorage.getItem("favoritos");
-    if (!favoritos) {
-      favoritos = [];
-    } else {
-      favoritos = JSON.parse(favoritos);
-    }
+    // Revisar si ya está en favoritos
+    const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
+    if (favoritos.includes(peli.imdbID)) fav.style.color = "red";
 
-    // si ya estaba en favoritos, pinta la estrella en rojo
-    if (favoritos.includes(peli.imdbID)) {
-      fav.style.color = "red";
-    }
-
-    // cuando pulsas la estrella añade o quita de favoritos
-    fav.addEventListener("click", () => {
-      let favs = localStorage.getItem("favoritos");
-      if (!favs) {
-        favs = [];
-      } else {
-        favs = JSON.parse(favs);
-      }
-
+    // Click en estrella
+    fav.addEventListener("click", (e) => {
+      e.stopPropagation();
+      let favs = JSON.parse(localStorage.getItem("favoritos") || "[]");
       if (favs.includes(peli.imdbID)) {
-        // si ya estaba, la quita
         favs = favs.filter((id) => id !== peli.imdbID);
         fav.style.color = "white";
       } else {
-        // si no estaba, la mete
         favs.push(peli.imdbID);
         fav.style.color = "red";
       }
       localStorage.setItem("favoritos", JSON.stringify(favs));
     });
 
-    // mete todo dentro de la tarjeta
     miDiv.appendChild(imagen);
     miDiv.appendChild(title);
     miDiv.appendChild(fav);
     cont.appendChild(miDiv);
 
-    // al hacer clic en la tarjeta abre el panel con más info
-    miDiv.addEventListener("click", () => {
-      mostrarPanel(peli.imdbID);
-    });
+    // Click en la portada
+    miDiv.addEventListener("click", () => mostrarPanel(peli.imdbID));
   });
 }
 
-// botón y contenedor de favoritos
-var btnFavoritos = document.getElementById("btn-favoritos");
-var contFavoritos = document.getElementById("contenedor-favoritos");
+// Botón de favoritos
+const btnFavoritos = document.getElementById("btn-favoritos");
+const contFavoritos = document.getElementById("contenedor-favoritos");
 
-var favoritosAbiertos = false; // controla si está visible
+btnFavoritos.addEventListener("click", () => {
+  // Limpiar contenedor
+  contFavoritos.innerHTML = "";
 
-btnFavoritos.addEventListener("click", function () {
-  // si ya está abierto lo cierra
-  if (favoritosAbiertos) {
-    contFavoritos.style.display = "none";
-    contFavoritos.innerHTML = "";
-    favoritosAbiertos = false;
-    return;
-  }
+  // Obtener array de favoritos del localStorage
+  let favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
 
-  // si está cerrado lo abre
-  contFavoritos.innerHTML = "<h2>Favoritos</h2>";
-  contFavoritos.style.display = "block";
-
-  var favoritos = localStorage.getItem("favoritos");
-  if (!favoritos) {
-    favoritos = [];
-  } else {
-    favoritos = JSON.parse(favoritos);
-  }
-
-  // si no hay favoritos muestra un mensaje
   if (favoritos.length === 0) {
-    var p = document.createElement("p");
-    p.textContent = "No tienes películas favoritas.";
-    contFavoritos.appendChild(p);
+    contFavoritos.innerHTML = "<p>No tienes favoritos aún.</p>";
   } else {
-    // por cada id de favorito pide la info a la api y la muestra
-    favoritos.forEach(function (id) {
-      fetch("https://www.omdbapi.com/?apikey=d3dce2e9&i=" + id)
-        .then(function (res) {
-          return res.json();
-        })
-        .then(function (peli) {
-          var card = document.createElement("div");
-          card.className = "fav-card";
+    favoritos.forEach((id) => {
+      // Por cada ID de favorito, pedimos la info a la API
+      fetch(`https://www.omdbapi.com/?apikey=d3dce2e9&i=${id}`)
+        .then((res) => res.json())
+        .then((peli) => {
+          const divPeli = document.createElement("div");
+          divPeli.style.display = "inline-block";
+          divPeli.style.margin = "10px";
+          divPeli.style.textAlign = "center";
 
-          var img = document.createElement("img");
-
-          // poster o imagen por defecto
-          if (peli.Poster && peli.Poster !== "N/A") {
-            img.src = peli.Poster;
-          } else {
-            img.src = "defecto.jpg";
-          }
-
+          const img = document.createElement("img");
+          img.src = peli.Poster !== "N/A" ? peli.Poster : "defecto.jpg";
           img.alt = peli.Title;
-          card.appendChild(img);
+          img.style.width = "150px";
+          img.style.borderRadius = "10px";
+          img.style.cursor = "pointer";
 
-          var info = document.createElement("div");
-          info.className = "fav-card-info";
+          const titulo = document.createElement("p");
+          titulo.textContent = peli.Title;
+          titulo.style.color = "white";
 
-          var h3 = document.createElement("h3");
-          h3.textContent = peli.Title;
+          // Al hacer click en la imagen, mostramos el panel
+          img.addEventListener("click", () => mostrarPanel(peli.imdbID));
 
-          var p = document.createElement("p");
-          p.textContent = peli.Year;
-
-          info.appendChild(h3);
-          info.appendChild(p);
-
-          card.appendChild(info);
-          contFavoritos.appendChild(card);
+          divPeli.appendChild(img);
+          divPeli.appendChild(titulo);
+          contFavoritos.appendChild(divPeli);
         });
     });
   }
 
-  favoritosAbiertos = true;
+  // Mostrar/ocultar contenedor
+  contFavoritos.style.display =
+    contFavoritos.style.display === "none" ? "block" : "none";
 });
 
-// muestra la pantalla de bienvenida al cargar la página
 window.addEventListener("load", () => {
   const bienvenida = document.getElementById("bienvenida");
   const btnBienvenida = document.getElementById("cerrar-bienvenida");
 
+  // Siempre mostrar la bienvenida
   bienvenida.style.display = "flex";
 
-  // cuando le das al botón, se cierra la pantalla
-  btnBienvenida.addEventListener("click", (e) => {
-    bienvenida.style.display = "none";
+  btnBienvenida.addEventListener("click", () => {
+    bienvenida.style.display = "none"; // se oculta al pulsar
   });
 });
-
 function mostrarPanel(id) {
-  // pide la info de la peli por id y muestra un panel encima
   fetch(`https://www.omdbapi.com/?apikey=d3dce2e9&i=${id}`)
     .then((res) => res.json())
     .then((peli) => {
       var overlay = document.createElement("div");
-      // crea un fondo oscuro por encima de todo
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.7)";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.zIndex = "999";
+      overlay.style.overflow = "auto";
 
       var panel = document.createElement("div");
-      // panel donde va la info de la peli
+      panel.style.backgroundColor = "rgba(0,0,0,0.9)";
+      panel.style.color = "white";
+      panel.style.padding = "20px";
+      panel.style.borderRadius = "10px";
+      panel.style.maxWidth = "80%";
+      panel.style.maxHeight = "80%";
+      panel.style.overflowY = "auto";
+      panel.style.textAlign = "center";
 
-      // mete la info en el panel
       panel.innerHTML =
         "<h2>" +
         peli.Title +
@@ -203,9 +159,7 @@ function mostrarPanel(id) {
       overlay.appendChild(panel);
       document.body.appendChild(overlay);
       document.body.style.overflow = "hidden";
-      // bloquea el scroll del fondo
 
-      // botón para cerrar el panel
       panel.querySelector(".cerrar-panel").addEventListener("click", () => {
         overlay.remove();
         document.body.style.overflow = "auto";
@@ -214,26 +168,16 @@ function mostrarPanel(id) {
 }
 
 window.onload = () => {
-  // parte que gestiona la búsqueda y la carga automática al hacer scroll
   let cont = document.getElementById("div");
   var contadorPag = 1;
   var nombrePeli = "";
   var anioPeli = "";
   var cargando = false;
   var tipo = "";
-
   var botswitch = document.getElementById("toggle");
+
   var switchText = document.getElementById("switch-text");
-
-  // carga si el usuario estaba buscando películas o series
-  var storedTipo = localStorage.getItem("tipo");
-  if (!storedTipo) {
-    tipo = "movie";
-  } else {
-    tipo = storedTipo;
-  }
-
-  // ajusta el switch visualmente
+  var tipo = localStorage.getItem("tipo") || "movie";
   if (tipo === "movie") {
     botswitch.checked = true;
     switchText.textContent = "Movies";
@@ -241,8 +185,6 @@ window.onload = () => {
     botswitch.checked = false;
     switchText.textContent = "Series";
   }
-
-  // cuando cambias el switch guarda si quieres pelis o series
   botswitch.addEventListener("change", function () {
     if (botswitch.checked) {
       tipo = "movie";
@@ -255,31 +197,26 @@ window.onload = () => {
     localStorage.setItem("tipo", tipo);
   });
 
-  // carga los valores anteriores de la búsqueda si estaban guardados
-  var storedNombre = localStorage.getItem("nombrePeli");
-  var storedAnio = localStorage.getItem("anioPeli");
-
-  document.getElementById("busca").value = storedNombre || "";
-  document.getElementById("anio").value = storedAnio || "";
+  //asociamos el valor del nombre y del año con el localstorage
+  document.getElementById("busca").value =
+    localStorage.getItem("nombrePeli") || "";
+  document.getElementById("anio").value =
+    localStorage.getItem("anioPeli") || "";
 
   nombrePeli = document.getElementById("busca").value;
   anioPeli = document.getElementById("anio").value;
 
-  // si había algo escrito, vuelve a buscar al cargar
   if (nombrePeli !== "") {
     lanzarPeticion();
   }
 
-  // función que hace la petición a la api
   function lanzarPeticion() {
     if (cargando) cargando = true;
-
     fetch(
       `https://www.omdbapi.com/?apikey=d3dce2e9&s=${nombrePeli}&y=${anioPeli}&page=${contadorPag}&type=${tipo}`
     )
       .then((response) => response.json())
       .then((data) => {
-        // si encuentra pelis las muestra y pasa a la siguiente página
         if (data.Search) {
           mostrarPelis(cont, data.Search);
           contadorPag++;
@@ -290,39 +227,33 @@ window.onload = () => {
       });
   }
 
-  // cuando pulsas el botón buscar
   document.getElementById("botonbuscar").addEventListener("click", () => {
     cont.innerHTML = "";
     contadorPag = 1;
-
     nombrePeli = document.getElementById("busca").value;
     anioPeli = document.getElementById("anio").value;
 
-    // guarda la búsqueda
+    // guarda los valores porr si recargamos la pagina, q no se pierda lo q hemos buscado
     localStorage.setItem("nombrePeli", nombrePeli);
     localStorage.setItem("anioPeli", anioPeli);
 
     lanzarPeticion();
   });
 
-  // permite buscar pulsando enter
   document.getElementById("busca").addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       cont.innerHTML = "";
       contadorPag = 1;
-
       nombrePeli = document.getElementById("busca").value;
       anioPeli = document.getElementById("anio").value;
 
       localStorage.setItem("nombrePeli", nombrePeli);
       localStorage.setItem("anioPeli", anioPeli);
-
       lanzarPeticion();
     }
   });
 
-  // scroll infinito: cuando llegas abajo carga más pelis
   window.addEventListener("scroll", () => {
     if (
       window.innerHeight + window.scrollY >=
